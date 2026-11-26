@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#35131f">
+  <title>24 días de sorpresas para Francis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="snow" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#"><span>✦</span> UN DICIEMBRE MÁGICO</a>
+    <button id="loginBtn" class="small-btn">Ingresar</button>
+  </header>
+  <main>
+    <section id="welcome" class="hero">
+      <p class="eyebrow">UNA SORPRESA PARA CADA DÍA</p>
+      <div class="ornament">✧</div>
+      <h1>24 días de sorpresas<br><em>para Francis</em></h1>
+      <p class="intro">Preparé algo especial para ti. Cada día encontrarás una pequeña sorpresa, un recuerdo o una razón más para sonreír.</p>
+      <div class="gold-line"></div>
+      <p id="progressText" class="progress-text">Inicia sesión para descubrir tus sorpresas</p>
+      <div class="progress-track"><div id="progressBar"></div></div>
+    </section>
+    <section class="calendar-wrap">
+      <div class="section-heading"><span>✦</span><h2>Tu calendario de adviento</h2><span>✦</span></div>
+      <p class="section-sub">Una pequeña dosis de magia, día tras día.</p>
+      <div id="calendar" class="calendar">
+        <div class="loading">Preparando la magia…</div>
+      </div>
+    </section>
+    <section class="closing-note">
+      <span>❧</span><p>Lo más bonito de la Navidad es poder compartirla contigo.</p><span>❧</span>
+    </section>
+  </main>
+  <footer>HECHO CON AMOR · PARA FRANCIS <span>♥</span></footer>
+
+  <div id="authModal" class="modal hidden">
+    <div class="modal-card auth-card">
+      <button class="close" data-close="authModal">×</button>
+      <p class="eyebrow">BIENVENIDA A TU CALENDARIO</p><h2>Ingresar</h2>
+      <p class="muted">Usa la cuenta que te preparé para guardar tus regalos abiertos.</p>
+      <form id="authForm">
+        <label>Correo electrónico<input id="email" type="email" autocomplete="username" required></label>
+        <label>Contraseña<input id="password" type="password" autocomplete="current-password" required minlength="6"></label>
+        <button class="gold-btn" type="submit">Entrar</button>
+      </form>
+      <p id="authMessage" class="form-message"></p>
+    </div>
+  </div>
+
+  <div id="giftModal" class="modal hidden">
+    <div class="modal-card gift-card">
+      <button class="close" data-close="giftModal">×</button>
+      <div class="gift-number" id="giftNumber">DÍA 01</div>
+      <div class="gift-icon">🎁</div>
+      <h2 id="giftTitle">Una sorpresa para ti</h2>
+      <img id="giftImage" class="gift-image hidden" alt="Imagen de la sorpresa">
+      <div id="giftBody" class="gift-body"></div>
+      <div id="giftVideoWrap" class="video-wrap hidden"></div>
+      <button class="gold-btn" data-close="giftModal">Guardar este momento ♥</button>
+    </div>
+  </div>
+
+  <div id="adminPanel" class="admin-panel hidden">
+    <div class="admin-header"><div><p class="eyebrow">ESPACIO PRIVADO</p><h2>Administrar calendario</h2></div><button id="logoutBtn" class="small-btn">Cerrar sesión</button></div>
+    <div class="admin-content">
+      <div class="admin-intro">Edita los regalos, sus imágenes y el día en que se desbloquean. Los cambios se guardan en la nube.</div>
+      <div class="admin-actions"><button id="newGiftBtn" class="gold-btn">+ Nuevo regalo</button><button id="refreshBtn" class="small-btn">Actualizar</button></div>
+      <div id="giftEditor" class="gift-editor"></div>
+    </div>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
