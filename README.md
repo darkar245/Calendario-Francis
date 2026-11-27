@@ -15,14 +15,15 @@ La clave pública/anon se puede usar en el navegador porque las tablas están pr
 ## 2. Crear las cuentas
 1. En Supabase abre **Authentication > Users > Add user**.
 2. Crea tu usuario con tu correo y contraseña.
-3. Crea otra cuenta para Francis. Dale el correo y la contraseña que quieras que use para entrar al calendario.
-4. Copia el UUID de TU cuenta (no el de Francis).
-5. En SQL Editor ejecuta:
+3. Para Francis, crea un usuario con un alias/correo que controles tú (no su correo personal) y marca **Auto Confirm User**. No envíes invitación ni compartas el correo. Su contraseña será el código secreto que ella escribirá en la página.
+4. En `app.js`, configura `FRANCIS_LOGIN_EMAIL` con exactamente ese mismo alias/correo.
+5. Copia el UUID de TU cuenta (no el de Francis).
+6. En SQL Editor ejecuta:
    ```sql
    insert into public.advent_admins(user_id)
    values ('PEGA-AQUI-TU-UUID');
    ```
-Solo tu cuenta tendrá el panel de administración. Francis solo verá y abrirá regalos.
+Solo tu cuenta tendrá el panel de administración. Francis solo verá y abrirá regalos. El formulario público le pide únicamente su código; el correo alias queda configurado internamente en `app.js`. No pongas contraseñas ni claves secretas en ese archivo.
 
 ## 3. Probar en tu computadora
 Para que los módulos JavaScript funcionen, sirve la carpeta mediante un servidor local. En VS Code instala **Live Server**, abre `index.html` y pulsa **Open with Live Server**. También puedes usar:
@@ -44,6 +45,7 @@ Ingresa con tu cuenta de administrador. Verás el panel privado y podrás editar
 - Los días anteriores quedan disponibles si ella no los abrió en su fecha.
 - Los días futuros permanecen bloqueados.
 - Al abrir una sorpresa se guarda en `advent_opens` vinculada a la cuenta de Francis. El progreso se conserva al cerrar sesión o cambiar de dispositivo.
+- El código secreto es la contraseña del usuario de Francis en Supabase Auth; Supabase guarda su hash. No lo escribas en el código fuente ni lo publiques en GitHub.
 
 ## Nota antes de usar
 La plantilla inicial configura las fechas del **1 al 24 de diciembre de 2026**. Si quieres usar otro año, cambia las fechas desde el panel o modifica el año en `supabase-schema.sql` antes de ejecutarlo. El contenido de ejemplo está vacío para que cargues tus propios regalos.

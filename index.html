@@ -40,14 +40,18 @@
   <div id="authModal" class="modal hidden">
     <div class="modal-card auth-card">
       <button class="close" data-close="authModal">×</button>
-      <p class="eyebrow">BIENVENIDA A TU CALENDARIO</p><h2>Ingresar</h2>
-      <p class="muted">Usa la cuenta que te preparé para guardar tus regalos abiertos.</p>
+      <p class="eyebrow">BIENVENIDA A TU CALENDARIO</p><h2 id="authTitle">Hola, Francis</h2>
+      <p id="authIntro" class="muted">Introduce tu código secreto para entrar a tus 24 sorpresas.</p>
       <form id="authForm">
-        <label>Correo electrónico<input id="email" type="email" autocomplete="username" required></label>
-        <label>Contraseña<input id="password" type="password" autocomplete="current-password" required minlength="6"></label>
-        <button class="gold-btn" type="submit">Entrar</button>
+        <label id="codeField">Tu código secreto<input id="accessCode" type="password" autocomplete="current-password" required minlength="6" maxlength="64" placeholder="Tu código secreto"></label>
+        <div id="adminFields" class="hidden">
+          <label>Correo electrónico<input id="email" type="email" autocomplete="username"></label>
+          <label>Contraseña<input id="password" type="password" autocomplete="current-password" minlength="6"></label>
+        </div>
+        <button id="authSubmit" class="gold-btn" type="submit">Entrar a mi calendario ♥</button>
       </form>
-      <p id="authMessage" class="form-message"></p>
+      <button id="authModeBtn" class="text-btn" type="button">Acceso de administrador</button>
+      <p id="authMessage" class="form-message" role="status" aria-live="polite"></p>
     </div>
   </div>
 

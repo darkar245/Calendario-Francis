@@ -81,3 +81,12 @@ on conflict(day) do nothing;
 -- copia el UUID de tu cuenta y ejecuta:
 -- insert into public.advent_admins(user_id) values ('TU-UUID-DE-USUARIO');
 -- Tu novia también debe tener una cuenta normal, sin añadirla a advent_admins.
+
+
+-- Permisos de API para los usuarios autenticados; RLS sigue limitando cada fila.
+grant usage on schema public to authenticated;
+grant select on public.advent_admins to authenticated;
+grant select on public.advent_settings to authenticated;
+grant select, insert, update, delete on public.advent_gifts to authenticated;
+grant select, insert on public.advent_opens to authenticated;
+grant execute on function public.is_advent_admin() to authenticated;

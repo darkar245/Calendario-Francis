@@ -3,6 +3,10 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 /* 1) Reemplaza estos dos valores por los de tu proyecto Supabase. */
 const SUPABASE_URL = "PEGA_AQUI_TU_PROJECT_URL";
 const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_PUBLIC_KEY";
+/* Usa un alias/correo que controles tú. Debe ser EXACTAMENTE el mismo
+   correo con el que crearás el usuario de Francis en Supabase Auth.
+   No uses el correo personal de Francis si quieres mantener la sorpresa. */
+const FRANCIS_LOGIN_EMAIL = "CAMBIA_POR_EL_ALIAS_DE_FRANCIS";
 const configured = !SUPABASE_URL.includes("PEGA_AQUI") && !SUPABASE_ANON_KEY.includes("PEGA_AQUI");
 const supabase = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
@@ -22,6 +26,20 @@ function escapeHtml(s="") {
 function show(id){$(id).classList.remove("hidden")}
 function hide(id){$(id).classList.add("hidden")}
 function message(t){$("authMessage").textContent=t}
+let adminLoginMode = false;
+function setAuthMode(adminMode){
+  adminLoginMode = adminMode;
+  $("authTitle").textContent = adminMode ? "Acceso privado" : "Hola, Francis";
+  $("authIntro").textContent = adminMode ? "Ingresa con tu correo y contraseña de administrador." : "Introduce tu código secreto para entrar a tus 24 sorpresas.";
+  $("codeField").classList.toggle("hidden", adminMode);
+  $("adminFields").classList.toggle("hidden", !adminMode);
+  $("accessCode").required = !adminMode;
+  $("email").required = adminMode;
+  $("password").required = adminMode;
+  $("authSubmit").textContent = adminMode ? "Entrar como administrador" : "Entrar a mi calendario ♥";
+  $("authModeBtn").textContent = adminMode ? "Volver al acceso de Francis" : "Acceso de administrador";
+  message("");
+}
 
 async function init(){
   if(!configured){
@@ -36,10 +54,10 @@ async function init(){
   await loadApp();
 }
 async function loadApp(){
-  if(!currentUser){isAdmin=false;gifts=[];renderCalendar([]);$("progressText").textContent="Inicia sesión para descubrir tus sorpresas";$("progressBar").style.width="0%";$("loginBtn").textContent="Ingresar";hide("adminPanel");return}
-  $("loginBtn").textContent="Mi cuenta";
+  if(!currentUser){isAdmin=false;gifts=[];renderCalendar([]);$("progressText").textContent="Tu primera sorpresa te está esperando";$("progressBar").style.width="0%";$("loginBtn").textContent="Ingresar";hide("adminPanel");return}
   const {data:adminRow}=await supabase.from("advent_admins").select("user_id").eq("user_id",currentUser.id).maybeSingle();
   isAdmin=!!adminRow;
+  $("loginBtn").textContent=isAdmin?"Administrar":"Cerrar sesión";
   const {data:setting}=await supabase.from("advent_settings").select("*").eq("id",1).maybeSingle();
   settings=setting;
   const {data:giftRows,error}=await supabase.from("advent_gifts").select("*").order("day");
@@ -117,15 +135,30 @@ async function createGift(){
   const {error}=await supabase.from("advent_gifts").insert({day,unlock_date:`${year}-12-${String(day).padStart(2,"0")}`,title:"Nueva sorpresa",message:""});
   if(error)alert(error.message);else await loadApp();
 }
-$("loginBtn").addEventListener("click",()=>currentUser? (isAdmin?show("adminPanel"):show("authModal")):show("authModal"));
+$("loginBtn").addEventListener("click",async()=>{
+  if(currentUser){if(isAdmin)show("adminPanel");else await supabase.auth.signOut();}
+  else {setAuthMode(false);show("authModal");}
+});
+$("authModeBtn").addEventListener("click",()=>setAuthMode(!adminLoginMode));
 $("authForm").addEventListener("submit",async e=>{
   e.preventDefault();if(!supabase){message("Configura Supabase primero.");return}
-  const {error}=await supabase.auth.signInWithPassword({email:$("email").value,password:$("password").value});
-  if(error)message("No se pudo ingresar. Verifica tu correo y contraseña.");else{hide("authModal");message("")}
+  let credentials;
+  if(adminLoginMode){
+    credentials={email:$("email").value.trim(),password:$("password").value};
+  }else{
+    if(!FRANCIS_LOGIN_EMAIL || FRANCIS_LOGIN_EMAIL.includes("CAMBIA_POR")){
+      message("El acceso aún no está configurado. Pídele a quien preparó el calendario que lo termine.");return;
+    }
+    credentials={email:FRANCIS_LOGIN_EMAIL,password:$("accessCode").value};
+  }
+  const {error}=await supabase.auth.signInWithPassword(credentials);
+  if(error)message(adminLoginMode?"No se pudo ingresar. Verifica tus datos.":"Ese código no coincide. Inténtalo otra vez.");
+  else{hide("authModal");message("");$("authForm").reset();}
 });
 $("logoutBtn").addEventListener("click",async()=>{await supabase.auth.signOut();hide("adminPanel")});
 $("newGiftBtn").addEventListener("click",createGift);
 $("refreshBtn").addEventListener("click",loadApp);
 document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",()=>hide(b.dataset.close)));
 document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)hide(m.id)}));
+setAuthMode(false);
 init();
