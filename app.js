@@ -1,12 +1,12 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 
 /* 1) Reemplaza estos dos valores por los de tu proyecto Supabase. */
-const SUPABASE_URL = "PEGA_AQUI_TU_PROJECT_URL";
-const SUPABASE_ANON_KEY = "PEGA_AQUI_TU_ANON_PUBLIC_KEY";
+const SUPABASE_URL = "https://bxlsmlnshyxmdklddhqo.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_-V0E_9IQO5kYHN2LYciU7A_vncRPPcZ";
 /* Usa un alias/correo que controles tú. Debe ser EXACTAMENTE el mismo
    correo con el que crearás el usuario de Francis en Supabase Auth.
    No uses el correo personal de Francis si quieres mantener la sorpresa. */
-const FRANCIS_LOGIN_EMAIL = "CAMBIA_POR_EL_ALIAS_DE_FRANCIS";
+const FRANCIS_LOGIN_EMAIL = "augustosarachocontacto@gmail.com";
 const configured = !SUPABASE_URL.includes("PEGA_AQUI") && !SUPABASE_ANON_KEY.includes("PEGA_AQUI");
 const supabase = configured ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
