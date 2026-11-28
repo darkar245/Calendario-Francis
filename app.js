@@ -126,11 +126,81 @@ ${g.image_url ? `
   $("giftEditor").querySelectorAll("form").forEach(form=>form.addEventListener("submit",saveGift));
   $("giftEditor").querySelectorAll("[data-delete]").forEach(b=>b.addEventListener("click",()=>deleteGift(b.dataset.delete)));
 }
+
 async function saveGift(e){
-  e.preventDefault();const id=e.currentTarget.dataset.form;const f=new FormData(e.currentTarget);
-  const payload={day:Number(f.get("day")),unlock_date:f.get("unlock_date"),title:f.get("title"),message:f.get("message"),image_url:f.get("image_url")||null,video_url:f.get("video_url")||null};
-  const {error}=await supabase.from("advent_gifts").update(payload).eq("id",id);
-  if(error)alert("No se pudo guardar: "+error.message);else await loadApp();
+  e.preventDefault();
+
+  const form = e.currentTarget;
+  const id = form.dataset.form;
+  const f = new FormData(form);
+  const gift = gifts.find(g => g.id === id);
+
+  if (!gift) {
+    alert("No se encontró este regalo.");
+    return;
+  }
+
+  const file = f.get("image_file");
+  let imageUrl = gift.image_url || null;
+
+  // Si elegiste una imagen, subirla a Supabase Storage.
+  if (file && file.size > 0) {
+    if (!file.type.startsWith("image/")) {
+      alert("Selecciona un archivo de imagen válido.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("La imagen no puede superar los 10 MB.");
+      return;
+    }
+
+    const extension = file.name.split(".").pop().toLowerCase();
+    const filePath = `${id}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+
+    const { data: uploaded, error: uploadError } =
+      await supabase.storage
+        .from("gift-images")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          contentType: file.type,
+          upsert: false
+        });
+
+    if (uploadError) {
+      alert("No se pudo subir la imagen: " + uploadError.message);
+      return;
+    }
+
+    const { data: publicData } = supabase.storage
+      .from("gift-images")
+      .getPublicUrl(uploaded.path);
+
+    imageUrl = publicData.publicUrl;
+  }
+
+  const payload = {
+    day: Number(f.get("day")),
+    unlock_date: f.get("unlock_date"),
+    title: f.get("title"),
+    message: f.get("message"),
+    image_url: imageUrl,
+    video_url: f.get("video_url") || null
+  };
+
+  const { error } = await supabase
+    .from("advent_gifts")
+    .update(payload)
+    .eq("id", id);
+
+  if (error) {
+    alert("No se pudo guardar: " + error.message);
+  } else {
+    alert("¡Regalo guardado correctamente! ❤️");
+    await loadApp();
+  }
+}
+
 }
 async function deleteGift(id){
   if(!confirm("¿Eliminar este regalo? Esta acción no se puede deshacer."))return;
