@@ -109,7 +109,16 @@ function renderAdmin(){
         <label>Fecha de desbloqueo<input name="unlock_date" type="date" value="${g.unlock_date}" required></label>
         <label class="wide">Nombre del regalo<input name="title" maxlength="100" value="${escapeHtml(g.title||"")}" required></label>
         <label class="wide">Mensaje o descripción<textarea name="message">${escapeHtml(g.message||"")}</textarea></label>
-        <label class="wide">URL de imagen<input name="image_url" type="url" value="${escapeHtml(g.image_url||"")}" placeholder="https://..."></label>
+     <label class="wide">Seleccionar imagen
+  <input name="image_file" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+</label>
+${g.image_url ? `
+  <div class="wide">
+    <p class="muted">Imagen actual:</p>
+    <img src="${escapeHtml(g.image_url)}" alt="Imagen actual"
+      style="max-width:180px;max-height:150px;object-fit:contain;border-radius:10px;">
+  </div>
+` : ""}
         <label class="wide">URL de video (opcional)<input name="video_url" type="url" value="${escapeHtml(g.video_url||"")}" placeholder="https://..."></label>
         <div class="editor-buttons wide"><button type="button" class="small-btn danger" data-delete="${g.id}">Eliminar</button><button class="gold-btn" type="submit">Guardar cambios</button></div>
       </form>
